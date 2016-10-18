@@ -312,15 +312,13 @@ server {
 {{ end }}
 
 server {
-        listen 80 default_server;
-        listen [::]:80 default_server ipv6only=on;
-
+        listen 80 
         listen 443 ssl;
-
-        root /app/;
+	server_name *.buyssl.host;
+        
+	root /app/;
         index index.html index.htm;
-
-        server_name *.buyssl.host;
+	
         ssl_certificate /app/nginx.crt;
         ssl_certificate_key /app/nginx.key;
 
