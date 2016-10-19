@@ -311,19 +311,5 @@ server {
 {{ end }}
 {{ end }}
 
-server {
-        listen 80 ;
-        listen 443 ssl;
-	server_name *.buyssl.host;
-        
-	root /app/;
-        index index.html index.htm;
-	
-        ssl_certificate /app/nginx.crt;
-        ssl_certificate_key /app/nginx.key;
 
-        location / {
-                try_files $uri $uri/ =404;
-        }
-}
 
