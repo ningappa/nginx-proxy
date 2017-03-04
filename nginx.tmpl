@@ -242,8 +242,35 @@ server {
 
         proxy_pass {{ trim $proto }}://{{ trim $host }}_2083;
 
+    }
 }
+server {
+    server_name {{ $host }} www.{{ $host }};
+    listen 7890 ;
+    access_log /var/log/nginx/access.log vhost;
+
+    {{ if (exists (printf "/etc/nginx/vhost.d/%s" $host)) }}
+    include {{ printf "/etc/nginx/vhost.d/%s" $host }};
+    {{ else if (exists "/etc/nginx/vhost.d/default") }}
+    include /etc/nginx/vhost.d/default;
+    {{ end }}
+
+    location / {
+
+        proxy_pass http://{{ trim $host }}_7890;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # WebSocket support (nginx 1.4)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+
+    }
 }
+
 
 {{ end }}
 
@@ -292,9 +319,33 @@ server {
     client_max_body_size 300M;
     location / {
         client_max_body_size 300M;
-    proxy_pass {{ trim $proto }}://{{ trim $host }}_2083;
+        proxy_pass {{ trim $proto }}://{{ trim $host }}_2083;
 
+    }
 }
+server {
+    server_name {{ $host }} www.{{ $host }};
+    listen 7890 ;
+    access_log /var/log/nginx/access.log vhost;
+
+    {{ if (exists (printf "/etc/nginx/vhost.d/%s" $host)) }}
+    include {{ printf "/etc/nginx/vhost.d/%s" $host }};
+    {{ else if (exists "/etc/nginx/vhost.d/default") }}
+    include /etc/nginx/vhost.d/default;
+    {{ end }}
+
+    location / {
+
+        proxy_pass http://{{ trim $host }}_7890;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # WebSocket support (nginx 1.4)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
 }
 
 {{ if (and (not $is_https) (exists "/etc/nginx/certs/default.crt") (exists "/etc/nginx/certs/default.key")) }}
