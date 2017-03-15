@@ -1,6 +1,6 @@
 {{ $CurrentContainer := where $ "ID" .Docker.CurrentContainerID | first }}
 
-{{ define "upstream" }}
+{{ define "upstream_80" }}
 {{ if .Address }}
 {{/* If we got the containers from swarm and this container's port is published to host, use host IP:PORT */}}
 {{ if and .Container.Node.ID .Address.HostPort }}
