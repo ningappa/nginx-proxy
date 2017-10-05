@@ -382,7 +382,7 @@ server {
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
 
-    ssl_certificate /app/nginx.cert;
+    ssl_certificate /app/nginx.crt;
     ssl_certificate_key /app/nginx.key;
     client_max_body_size 300M;
    location / {
