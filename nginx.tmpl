@@ -352,22 +352,29 @@ server {
     client_max_body_size 300M;
     location / {
         client_max_body_size 300M;
-    {{ if eq $proto "uwsgi" }}
-    include uwsgi_params;
-    uwsgi_pass {{ trim $proto }}://{{ trim $host }}_80;
-    {{ else }}
-    proxy_pass {{ trim $proto }}://{{ trim $host }}_80;
-    {{ end }}
-    {{ if (exists (printf "/etc/nginx/htpasswd/%s" $host)) }}
-    auth_basic      "Restricted {{ $host }}";
-    auth_basic_user_file    {{ (printf "/etc/nginx/htpasswd/%s" $host) }};
-    {{ end }}
-    {{ if (exists (printf "/etc/nginx/vhost.d/%s_location" $host)) }}
-    include {{ printf "/etc/nginx/vhost.d/%s_location" $host}};
-    {{ else if (exists "/etc/nginx/vhost.d/default_location") }}
-    include /etc/nginx/vhost.d/default_location;
-    {{ end }}
+        {{ if eq $proto "uwsgi" }}
+        include uwsgi_params;
+        uwsgi_pass {{ trim $proto }}://{{ trim $host }}_80;
+        {{ else }}
+        proxy_pass {{ trim $proto }}://{{ trim $host }}_80;
+        {{ end }}
+        {{ if (exists (printf "/etc/nginx/htpasswd/%s" $host)) }}
+        auth_basic      "Restricted {{ $host }}";
+        auth_basic_user_file    {{ (printf "/etc/nginx/htpasswd/%s" $host) }};
+        {{ end }}
+        {{ if (exists (printf "/etc/nginx/vhost.d/%s_location" $host)) }}
+        include {{ printf "/etc/nginx/vhost.d/%s_location" $host}};
+        {{ else if (exists "/etc/nginx/vhost.d/default_location") }}
+        include /etc/nginx/vhost.d/default_location;
+        {{ end }}
+    }
 }
+
+server {
+    server_name {{ $host }} www.{{ $host }};
+    listen 443 {{ $default_server }};
+    access_log /var/log/nginx/access.log vhost;
+    return 301 https://$host$request_uri;
 }
 server {
     server_name {{ $host }} www.{{ $host }};
