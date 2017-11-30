@@ -370,12 +370,7 @@ server {
     }
 }
 
-server {
-    server_name {{ $host }} www.{{ $host }};
-    listen 443 {{ $default_server }};
-    access_log /var/log/nginx/access.log vhost;
-    return 301 https://$host$request_uri;
-}
+
 server {
     server_name {{ $host }} www.{{ $host }};
      listen 2083 ssl http2 ;
